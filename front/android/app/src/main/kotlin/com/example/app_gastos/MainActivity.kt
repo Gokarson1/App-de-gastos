@@ -1,4 +1,4 @@
-package com.example.app_gastos
+package com.bullalbo.appgastos
 
 import io.flutter.embedding.android.FlutterActivity
 
