@@ -1,0 +1,64 @@
+{
+    "banks": [
+      {
+        "id": "bancodechile",
+        "name": "Banco de Chile",
+        "domains": ["bancodechile.cl", "email.bancodechile.cl", "notificaciones.bancodechile.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "bancoestado",
+        "name": "BancoEstado",
+        "domains": ["bancoestado.cl", "notificaciones.bancoestado.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "santander",
+        "name": "Santander Chile",
+        "domains": ["santander.cl", "notificaciones.santander.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "scotiabank",
+        "name": "Scotiabank Chile",
+        "domains": ["scotiabank.cl", "email.scotiabank.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "bci",
+        "name": "Banco BCI",
+        "domains": ["bci.cl", "comunicaciones.bci.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "falabella",
+        "name": "Banco Falabella",
+        "domains": ["bancofalabella.cl", "notificaciones.bancofalabella.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "itau",
+        "name": "Banco Itaú Chile",
+        "domains": ["itau.cl", "itau.com", "comunicaciones.itau.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "security",
+        "name": "Banco Security",
+        "domains": ["security.cl", "bancosecurity.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "ripley",
+        "name": "Banco Ripley",
+        "domains": ["bancoripley.cl"],
+        "country": "Chile"
+      },
+      {
+        "id": "internacional",
+        "name": "Banco Internacional",
+        "domains": ["bancointernacional.cl"],
+        "country": "Chile"
+      }
+    ]
+  }
