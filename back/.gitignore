@@ -2,3 +2,5 @@ credential.json
 bancos.js
 bancos/
 bancos.json
+.env
+detected_charges.json

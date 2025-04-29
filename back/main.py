@@ -71,20 +71,31 @@ def main():
     bank_query = " OR ".join([f"from:{domain}" for domain in bank_domains])
     full_query = f"({bank_query}) AND (factura OR pago OR compra OR boleta OR cobro OR recibo OR abono OR cargo)"
     emails = leer_emails(service, query=full_query)
-
+    
+    detected_charges = []
+    
     for idx, email in enumerate(emails, 1):
-        print(f"\n--- Email #{idx} ---")
-        print("Texto:")
-        print(email)
-
+        email_info = {
+            "id": idx,
+            "amounts": []
+        }
+        
         montos = extraer_montos_regex(email)
-
-        if montos != []:
-            print("\nMontos detectados:")
-            for monto in montos:
-                print(f"- {monto} ")
-        else:
-            print("\nNo se detectaron montos.")
+        
+        if montos:
+            email_info["amounts"] = montos
+            
+        detected_charges.append(email_info)
+    
+    # Convert to JSON
+    charges_json = json.dumps(detected_charges, indent=4, ensure_ascii=False)
+    
+    # Print JSON to console
+    print(charges_json)
+    
+    # Optionally save to file
+    with open("detected_charges.json", "w", encoding="utf-8") as f:
+        f.write(charges_json)
 
 if __name__ == '__main__':
     main()
