@@ -4,3 +4,14 @@ bancos/
 bancos.json
 .env
 detected_charges.json
+
+# Ignorar entorno virtual
+env
+.venv/
+
+# Archivos de Python compilados
+__pycache__/
+*.pyc
+
+# Archivos de configuración de entorno
+.env

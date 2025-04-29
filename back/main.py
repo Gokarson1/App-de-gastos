@@ -1,101 +1,66 @@
-import base64
-import re
-import os
-import json
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List
+from google.auth.credentials import Credentials as GoogleCredentials
 from googleapiclient.discovery import build
-from email import message_from_bytes
+import spacy
 
-# ======== Configuración OAuth2 para Gmail API ========
+app = FastAPI()
+nlp = spacy.load("es_core_news_sm")
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+class TokenRequest(BaseModel):
+    access_token: str
 
-# ======== Funciones ========
+class AccessTokenCredentials(GoogleCredentials):
+    def __init__(self, token: str):
+        super().__init__()
+        self.token = token
 
-def autenticar_gmail():
-    flow = InstalledAppFlow.from_client_secrets_file(
-        'credential.json', SCOPES)
-    creds = flow.run_local_server(port=0)
-    return build('gmail', 'v1', credentials=creds)
+    def refresh(self, request):
+        raise Exception("Este token no es refrescable")
 
-def leer_emails(service, query=''):
-    results = service.users().messages().list(userId='me', q=query, maxResults=10).execute()
-    messages = results.get('messages', [])
+    @property
+    def expired(self):
+        return False
 
-    emails = []
-    for msg in messages:
-        txt = service.users().messages().get(userId='me', id=msg['id'], format='raw').execute()
-        raw_msg = base64.urlsafe_b64decode(txt['raw'].encode('ASCII'))
-        mime_msg = message_from_bytes(raw_msg)
-
-        if mime_msg.is_multipart():
-            parts = mime_msg.get_payload()
-            content = ''
-            for part in parts:
-                if part.get_content_type() == 'text/plain':
-                    content += part.get_payload(decode=True).decode()
-        else:
-            content = mime_msg.get_payload(decode=True).decode()
-
-        emails.append(content)
-    return emails
-
-def extraer_montos_regex(texto):
-    """Extrae montos usando expresiones regulares"""
-    patrones = [
-        r'\$\s?\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?',     # $1.234,56 o $ 1,234.56
-        r'\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?\s?(USD|EUR|MXN|COP|€|\$)',  # 1.000,00 EUR o 1,000.00 USD
-    ]
-    montos = []
-    for patron in patrones:
-        encontrados = re.findall(patron, texto)
-        montos.extend(encontrados)
-    return montos
-
-
-def load_banks():
-    bank_data_path = os.path.join(os.path.dirname(__file__), 'bancos.json')
-    with open(bank_data_path, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-# ======== Código principal ========
-
-def main():
-    service = autenticar_gmail()
+    @property
+    def valid(self):
+        return True
     
-    bank_data = load_banks()
-    banks = bank_data['banks']
+def get_user_emails(access_token: str) -> List[str]:
+    try:
+        creds = AccessTokenCredentials(access_token)
+        service = build('gmail', 'v1', credentials=creds)
+        results = service.users().messages().list(userId='me', maxResults=10).execute()
+        messages = results.get('messages', [])
 
-    bank_domains = [domain for bank in banks for domain in bank['domains']]
-    bank_query = " OR ".join([f"from:{domain}" for domain in bank_domains])
-    full_query = f"({bank_query}) AND (factura OR pago OR compra OR boleta OR cobro OR recibo OR abono OR cargo)"
-    emails = leer_emails(service, query=full_query)
-    
-    detected_charges = []
-    
-    for idx, email in enumerate(emails, 1):
-        email_info = {
-            "id": idx,
-            "amounts": []
+        emails = []
+        for msg in messages:
+            msg_data = service.users().messages().get(userId='me', id=msg['id']).execute()
+            snippet = msg_data.get('snippet', '')
+            emails.append(snippet)
+
+        return emails
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error accediendo a Gmail: {str(e)}")
+
+def analyze_text_with_spacy(emails: List[str]) -> List[str]:
+    gastos_detectados = []
+    for email in emails:
+        doc = nlp(email)
+        for ent in doc.ents:
+            if ent.label_ in ['MONEY']:
+                gastos_detectados.append(f"Gasto detectado: {ent.text} en '{email[:50]}...'")
+    return gastos_detectados
+
+@app.post("/analizar-correos")
+async def analizar_correos(data: TokenRequest):
+    try:
+        emails = get_user_emails(data.access_token)
+        gastos = analyze_text_with_spacy(emails)
+        return {
+            "cantidad_correos_analizados": len(emails),
+            "gastos_detectados": gastos
         }
-        
-        montos = extraer_montos_regex(email)
-        
-        if montos:
-            email_info["amounts"] = montos
-            
-        detected_charges.append(email_info)
-    
-    # Convert to JSON
-    charges_json = json.dumps(detected_charges, indent=4, ensure_ascii=False)
-    
-    # Print JSON to console
-    print(charges_json)
-    
-    # Optionally save to file
-    with open("detected_charges.json", "w", encoding="utf-8") as f:
-        f.write(charges_json)
-
-if __name__ == '__main__':
-    main()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
