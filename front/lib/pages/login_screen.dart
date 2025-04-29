@@ -1,11 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'signin_screen.dart';
 import 'home_screen.dart';
+import '../services/firebase_auth_service.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget  {
   const LoginScreen({super.key});
+ @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,11 +66,19 @@ class LoginScreen extends StatelessWidget {
                 ),
                 icon: const Icon(Icons.account_circle),
                 label: const Text('Continuar con Google'),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
+                onPressed: () async {
+                  final user = await FirebaseAuthService().signInWithGoogle();
+                  
+                  if (user != null) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Inicio de sesión cancelado')),
+                    );
+                  }
                 },
               ),
             ],
