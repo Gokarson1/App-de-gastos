@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         
 
         {
@@ -34,13 +35,13 @@
                 "--dart-define-from-file=.env/dev.json"
             ]
         },
-        {
-            "name": "Prod",
-            "type": "dart",
-            "request": "launch",
-            "args": [ 
-                "--dart-define-from-file=.env/prod.json"
-            ]
-        }
+            {
+                "name": "Prod",
+                "type": "dart",
+                "request": "launch",
+                "args": [ 
+                    "--dart-define-from-file=.env/prod.json"
+                ]
+            }
     ]
 }

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:app_gastos/clases/gastos.dart';
 import 'package:app_gastos/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,7 +18,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Obtener el usuario actual
   final User? _user = FirebaseAuth.instance.currentUser;
-
+  final Gastos _gastos = Gastos(
+    gasto: '0.0', // Corregido de 'gastos' a 'gasto'
+    moneda: 'USD', // Corregido de 'modeda' a 'moneda'
+    tipo_gasto: 'General',
+  );
+  @override
   void incrementCounter() {
     setState(() {
       counter++;
@@ -36,9 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inicio - Finanzas Personales'),
-      ),
+      appBar: AppBar(title: const Text('Inicio - Finanzas Personales')),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -48,8 +52,10 @@ class _HomeScreenState extends State<HomeScreen> {
               accountName: Text(_user?.displayName ?? 'Usuario'),
               accountEmail: Text(_user?.email ?? 'Correo no disponible'),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(_user?.photoURL ??
-                    'https://www.example.com/default-avatar.png'),
+                backgroundImage: NetworkImage(
+                  _user?.photoURL ??
+                      'https://www.example.com/default-avatar.png',
+                ),
               ),
             ),
             // Opciones del menú
@@ -82,7 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const Text('Has presionado el botón tantas veces:'),
             Text(
-              '$counter',
+              (_gastos.gasto == '0.0')
+                  ? '0'
+                  : _gastos.gasto, // Corregido de 'gastos' a 'gasto'
               style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
           ],

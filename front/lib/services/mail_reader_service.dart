@@ -1,24 +1,23 @@
 import 'package:dio/dio.dart';
 import '../utils/env.dart';
+import '../clases/gastos.dart';
 
 class MailReaderService {
   final Dio dio = Dio();
 
   final String baseUrl = EnvConfig.baseurl;
 
-  Future<bool> sendGoogleAccessToken(String accessToken) async {
+  Future<List<Gastos>> sendGoogleAccessToken(String accessToken) async {
     try {
       final response = await dio.post(
-        'http://$baseUrl:8000/analizar-correos',
+        'http://192.168.56.1:8000/analizar-correos',
         data: {'access_token': accessToken},
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
-
-      print('Respuesta del backend: ${response.data}');
-      return true;
+      List<dynamic> gastosList = response.data as List<dynamic>;
+      return gastosList.map((gastoJson) => Gastos.fromJson(gastoJson)).toList();
     } catch (e) {
-      print('Error al enviar token: $e');
-      return false;
+      throw Exception('Failed to analyze emails: $e');
     }
   }
 }

@@ -30,9 +30,7 @@ def detectar_gastos_con_lugares(texto: str) -> List[Dict]:
         resultados.append({
             "gasto": monto,
             "moneda": moneda,
-            "tipo_gasto": lugar,
-            "descripcion": texto[:100] + "...",
-            "origen": "Regex"
+            "tipo_gasto": lugar,            
         })
 
     return resultados
@@ -53,8 +51,4 @@ def analyze_text_with_context(emails: List[str]) -> Dict:
         if contiene_palabra_clave(email):
             gastos += detectar_gastos_con_lugares(email)
 
-    return {
-        "correos_analizados": emails,
-        "cantidad_correos_analizados": len(emails),
-        "gastos_detectados": gastos
-    }
+    return gastos
