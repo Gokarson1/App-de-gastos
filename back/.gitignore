@@ -4,6 +4,7 @@ bancos/
 bancos.json
 .env
 detected_charges.json
+./app/services/credentials.json
 
 # Ignorar entorno virtual
 env
