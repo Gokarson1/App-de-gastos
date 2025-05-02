@@ -14,7 +14,9 @@ class RegisterScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              decoration: const InputDecoration(labelText: 'Correo electrónico'),
+              decoration: const InputDecoration(
+                labelText: 'Correo electrónico',
+              ),
             ),
             TextField(
               obscureText: true,
@@ -22,7 +24,9 @@ class RegisterScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF547808)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF547808),
+              ),
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
