@@ -6,9 +6,9 @@ import 'signin_screen.dart';
 import 'home_screen.dart';
 import '../services/firebase_auth_service.dart';
 
-class LoginScreen extends StatefulWidget  {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
- @override
+  @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
@@ -40,7 +40,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterScreen(),
+                    ),
                   );
                 },
                 child: const Text('Comenzar'),
@@ -50,7 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignInScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const SignInScreen(),
+                    ),
                   );
                 },
                 child: const Text('Iniciar Sesión'),
@@ -68,15 +72,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 label: const Text('Continuar con Google'),
                 onPressed: () async {
                   final user = await FirebaseAuthService().signInWithGoogle();
-                  
+
                   if (user != null) {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const HomeScreen(),
+                      ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Inicio de sesión cancelado')),
+                      const SnackBar(
+                        content: Text('Inicio de sesión cancelado'),
+                      ),
                     );
                   }
                 },
