@@ -46,3 +46,4 @@ app.*.map.json
 
 #Variables de entorno
 .env
+/android/gradle.properties
