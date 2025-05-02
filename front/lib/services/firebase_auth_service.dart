@@ -19,11 +19,9 @@ class FirebaseAuthService {
       idToken: googleAuth.idToken,
     );
 
-    print('Google Access Token: ${googleAuth.accessToken}');
-    print('Google ID Token: ${googleAuth.idToken}');
-
     final mailReader = MailReaderService();
-    await mailReader.sendGoogleAccessToken(googleAuth.accessToken!);
+    await mailReader.sendGoogleAccessToken(credential.accessToken!);
+
     final userCredential = await _auth.signInWithCredential(credential);
     return userCredential.user;
   }
